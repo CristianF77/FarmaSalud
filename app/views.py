@@ -2,15 +2,17 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Producto, Personal, Venta, Item
 from .forms import ItemForm, VentaForm, AñadirStock
-from .utils import reducirCantidad
+from .utils import reducirCantidad, calcularImporte
 
 
 def home(request):
     venta = Venta.objects.all()
+    # Calucalar importe
     context = {
         'venta':venta,
     }
     return render(request, 'app/home.html', context)
+
 
 def productos_stock(request):
     productos = Producto.objects.all()
@@ -24,12 +26,14 @@ def productos_stock(request):
     }
     return render(request, 'app/stock.html', context)
 
+
 def personal(request):
     personal = Personal.objects.filter(cargo='DT')
     context = {        
         'personal': personal,
     }
     return render(request, 'app/personal.html', context)
+
 
 def item_create(request, num_vta):
     submitted = False
@@ -42,6 +46,7 @@ def item_create(request, num_vta):
             cantidad = cd['cantidad']
             if producto.cantidad == 0:
                 # Msj no hay stock
+                # hay_stock
                 pass
             else:
                 i = Item(producto=producto, cantidad= cantidad)
@@ -51,7 +56,10 @@ def item_create(request, num_vta):
                 if 'crear-otro' in request.POST:
                     return redirect('/venta/' + str(num_vta) + '/item/')
                 if 'submitted' in request.POST:
+                    calcularImporte(num_vta)
                     return redirect('/home/')
+                
+                
     else:
         form = ItemForm()
         if 'submitted' in request.GET:
@@ -63,6 +71,7 @@ def item_create(request, num_vta):
         }
             
     return render(request, 'app/item_create.html', context)
+
 
 def venta_create(request):
     submitted = False

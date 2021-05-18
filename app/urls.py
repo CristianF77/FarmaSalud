@@ -12,7 +12,5 @@ urlpatterns = [
     path('venta/<int:num_vta>/item/', views.item_create, name='item-create'),
     path('venta/', views.venta_create, name='venta-create'),
 
-    
-    
 
 ]
