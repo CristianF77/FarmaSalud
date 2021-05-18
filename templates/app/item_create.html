@@ -1,0 +1,22 @@
+{% extends 'app/base.html'%} {% block content%}
+<br></br>
+
+<div class = "container">
+  <h1 class= "text-center">Crear Item</h1>
+  <br>
+    <form action="" method="post" novalidate>
+    <table>
+    {{ form.as_p }}
+    <tr>
+    <td>&nbsp;</td>
+    <td>
+      <input name='submitted' type="submit" value="Submit">
+      <input name='crear-otro' type="submit" value="Crear otro Item?">
+      </td>
+    </tr>
+    </table>
+    {% csrf_token %}
+    </form>
+  </table>
+</div>
+{% endblock%}

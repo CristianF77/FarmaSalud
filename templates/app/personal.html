@@ -1,0 +1,35 @@
+{% extends 'app/base.html'%} {% block content%}
+<br></br>
+
+<div class = "container">
+  <h1 class= "text-center">Personal Sucursales</h1>
+  <br>
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Legajo</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Apellido</th>        
+        <th scope="col">Cargo</th>
+        <th scope="col">Documento</th>
+        <th scope="col">Direccion</th>        
+        <th scope="col">Telefono</th>
+        
+      </tr>
+    </thead>
+    {% for p in personal%}
+    <tbody>
+      <tr>    
+        <td>{{p.legajo}}</td>
+        <td>{{p.nombre}}</td>
+        <td>{{p.apellido}}</td>
+        <td>{{p.cargo}}</td>
+        <td>{{p.documento}}</td>
+        <td>{{p.direccion}}</td>
+        <td>{{p.telefono}}</td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+</div>
+{% endblock%}

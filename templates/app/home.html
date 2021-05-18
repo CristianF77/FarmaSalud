@@ -1,0 +1,38 @@
+{% extends 'app/base.html'%}
+
+{% block content%}
+<br></br>
+
+<div class = "container">
+  <h1 class= "text-center">Listado de Ventas</h1>
+  <br>
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Venta N°</th>
+        <th scope="col">Fecha</th>
+        <th scope="col">Importe</th>        
+        <th scope="col">Cliente</th>
+        <th scope="col">Metodo_pago</th>
+        <th scope="col">Vendedor</th>        
+        
+      </tr>
+    </thead>
+    {% for v in venta%}
+    <tbody>
+      <tr>    
+        <td>{{v.id}}</td>
+        <td>{{v.fecha}}</td>
+        <td>{{v.importe}}</td>
+        <td>{{v.cliente}}</td>
+        <td>{{v.metodo_pago}}</td>
+        <td>{{v.vendedor}}</td>
+        
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+</div>
+
+
+{% endblock%}
