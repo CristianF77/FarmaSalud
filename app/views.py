@@ -1,8 +1,9 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Producto, Personal, Venta, Item, Cliente
+from .models import Producto, PersonalSucursal, Venta, Item, Cliente, Farmacia
 from .forms import ItemForm, VentaForm, AñadirStock, ClienteForm, BuscarClienteForm
 from .utils import reducirCantidad, calcularImporte
+from django import forms
 
 
 def home(request):
@@ -28,18 +29,25 @@ def productos_stock(request):
 
 
 def personal(request):
-    personal = Personal.objects.filter(cargo='DT')
+    personal_suc = PersonalSucursal.objects.filter(cargo='DT')
     context = {
-        'personal': personal,
+        'personal_suc': personal_suc,
     }
     return render(request, 'app/personal.html', context)
 
 
 def item_create(request, num_vta):
     submitted = False
+    vta = Venta.objects.get(id=num_vta)
+    suc = vta.farmacia
+
+    ItemForm.base_fields['producto'] = forms.ModelChoiceField(
+        queryset=Producto.objects.filter(farmacia=suc))
 
     if request.method == 'POST':
+
         form = ItemForm(request.POST)
+        print(form)
         if form.is_valid():
             cd = form.cleaned_data
             producto = cd['producto']
@@ -85,7 +93,6 @@ def venta_create(request):
             vendedor = cd['vendedor']
             vta = Venta(metodo_pago=metodo, cliente=cliente, vendedor=vendedor)
             vta.save()
-            print(vta.id)
             return HttpResponseRedirect('/venta/' + str(vta.id) + '/item/')
     else:
         form = VentaForm()
