@@ -47,7 +47,6 @@ class Producto(models.Model):
     description = models.TextField(max_length=200, blank=True, null=True)
     precio = models.DecimalField(max_digits=10, decimal_places=2, null=True,blank=True)
     cantidad = models.IntegerField(blank=True, null=True, default=0)
-    # categoria = models.CharField(max_length=100, blank=True, null=True)
     venta_Libre = models.CharField(max_length=20, choices=TIPO_REMEDIO, blank=True, null=True)
     farmacia = models.ForeignKey(Farmacia, on_delete=models.SET_NULL, blank=True, null=True)
 
@@ -56,12 +55,10 @@ class Producto(models.Model):
 
 class Venta(models.Model):
     METODO_PAGO = (('Efectivo', 'Contado'),('Débito', 'Tarjeta de débito'),('Crédito', 'Tarjeta de crédito'))
-    # num_vta =models.CharField(max_length=15, blank=True, null=True, default=0)
     fecha = models.DateTimeField(auto_now=True)
     importe = models.DecimalField(max_digits=10,decimal_places=2, null=True,blank=True)
     metodo_pago = models.CharField(choices=METODO_PAGO, max_length=10, blank=True, null=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, blank=True, null=True)
-    # items = models.ManyToManyField(Item, blank=True)
     vendedor = models.ForeignKey(Personal, on_delete=models.SET_NULL, blank=True, null=True)
     
 

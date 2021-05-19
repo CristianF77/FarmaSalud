@@ -1,0 +1,28 @@
+{% extends 'app/base.html'%} {% block content%}
+<br></br>
+
+<div class = "container">
+  <h1 class= "text-center">Buscar Cliente</h1>
+  <br>
+  {% if submitted %}
+    <p class="success">
+         Cliente creada
+    </p>
+ {% else %}
+    <form action="" method="post" novalidate>
+    <table>
+    {{ form.as_table }}
+    <tr>
+    <td>&nbsp;</td>
+    <td>
+      <input type="submit" value="Buscar Cliente">
+    </td>
+    </tr>
+    </table>
+    <br>
+    {% csrf_token %}
+    </form>
+ {% endif %}
+  </table>
+</div>
+{% endblock%}

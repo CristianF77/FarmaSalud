@@ -21,4 +21,13 @@ class AñadirStock(ModelForm):
     class Meta:
         model = Producto
         fields = ['cantidad']
+
+class ClienteForm(ModelForm):
+    class Meta:
+        model = Cliente
+        fields = '__all__'
     
+class BuscarClienteForm(ModelForm):
+    class Meta:
+        model = Cliente
+        fields = ['documento']

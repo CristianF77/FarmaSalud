@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Producto, Personal, Venta, Item
-from .forms import ItemForm, VentaForm, AñadirStock
+from .models import Producto, Personal, Venta, Item, Cliente
+from .forms import ItemForm, VentaForm, AñadirStock, ClienteForm, BuscarClienteForm
 from .utils import reducirCantidad, calcularImporte
 
 
@@ -75,6 +75,8 @@ def item_create(request, num_vta):
 
 def venta_create(request):
     submitted = False
+    clte_id = request.session.get('clte')
+    print(clte_id)
     if request.method == 'POST':
         form = VentaForm(request.POST)
         if form.is_valid():
@@ -100,7 +102,6 @@ def venta_create(request):
 
 
 def add_stock(request, pk):
-    print(pk)
     producto = Producto.objects.get(pk=pk)
     form = AñadirStock(request.POST)
     
@@ -116,4 +117,60 @@ def add_stock(request, pk):
         'form': form,
     }
     return render(request, 'app/add_stock.html', context)
+
+
+def buscar_cliente(request):
+    
+    form = BuscarClienteForm(request.POST)
+
+    if request.method == 'POST':        
+        
+        if form.is_valid():
+            clean_doc = form.cleaned_data['documento']
+            print('Request: ', clean_doc)
+            cliente = Cliente.objects.get(documento=clean_doc)
+
+            if cliente.documento == clean_doc:
+                print('Query: ', cliente.documento)
+                request.session.flush()
+                request.session['clte'] = c.id
+                return redirect('/venta/')
+            else:
+                return redirect('/cliente/add/')
+    context = {
+        'form': form,
+    }
+    return render(request, 'app/buscar_cliente.html', context)
+
+def add_cliente(request):
+    submitted = False
+    if request.method == 'POST':
+        if 'existe_cliente' in request.POST:
+            return redirect('/venta/')
+
+        form = ClienteForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            documento = cd['documento']
+            nombre = cd['nombre']
+            apellido = cd['apellido']
+            direccion = cd['direccion']
+            telefono = cd['telefono']
+            email = cd['email']
+            obra_social = cd['obra_social']
+            clte = Cliente(documento=documento, nombre=nombre,apellido=apellido, direccion=direccion, telefono=telefono, email=email, obra_social=obra_social)
+            clte.save()
+            request.session['clte'] = clte.id
+            return redirect('/venta/')
+    else:
+        form = ClienteForm()
+        if 'submitted' in request.GET:
+            submitted = True
+    
+    context = {
+        'form': form,
+        'submitted': submitted
+        }
+            
+    return render(request, 'app/add_cliente.html', context)
     
