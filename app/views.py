@@ -9,19 +9,19 @@ def home(request):
     venta = Venta.objects.all()
     # Calucalar importe
     context = {
-        'venta':venta,
+        'venta': venta,
     }
     return render(request, 'app/home.html', context)
 
 
 def productos_stock(request):
     productos = Producto.objects.all()
-    
+
     if request.method == 'POST':
         print(request.POST['id'])
         redirect('/stock/add/' + request.POST['id'])
 
-    context= {
+    context = {
         'productos': productos,
     }
     return render(request, 'app/stock.html', context)
@@ -29,7 +29,7 @@ def productos_stock(request):
 
 def personal(request):
     personal = Personal.objects.filter(cargo='DT')
-    context = {        
+    context = {
         'personal': personal,
     }
     return render(request, 'app/personal.html', context)
@@ -37,7 +37,7 @@ def personal(request):
 
 def item_create(request, num_vta):
     submitted = False
-    
+
     if request.method == 'POST':
         form = ItemForm(request.POST)
         if form.is_valid():
@@ -49,7 +49,7 @@ def item_create(request, num_vta):
                 # hay_stock
                 pass
             else:
-                i = Item(producto=producto, cantidad= cantidad)
+                i = Item(producto=producto, cantidad=cantidad)
                 i.venta = Venta.objects.get(id=num_vta)
                 i.save()
                 reducirCantidad(producto, cantidad)
@@ -58,18 +58,17 @@ def item_create(request, num_vta):
                 if 'submitted' in request.POST:
                     calcularImporte(num_vta)
                     return redirect('/home/')
-                
-                
+
     else:
         form = ItemForm()
         if 'submitted' in request.GET:
             submitted = True
-    
+
     context = {
         'form': form,
         'submitted': submitted
-        }
-            
+    }
+
     return render(request, 'app/item_create.html', context)
 
 
@@ -92,19 +91,19 @@ def venta_create(request):
         form = VentaForm()
         if 'submitted' in request.GET:
             submitted = True
-    
+
     context = {
         'form': form,
         'submitted': submitted
-        }
-            
+    }
+
     return render(request, 'app/venta_create.html', context)
 
 
 def add_stock(request, pk):
     producto = Producto.objects.get(pk=pk)
     form = AñadirStock(request.POST)
-    
+
     if request.method == 'POST':
         if form.is_valid():
             cant = int(request.POST['cantidad'])
@@ -112,19 +111,19 @@ def add_stock(request, pk):
             producto.save()
 
             return redirect('/home/')
-            
-    context = { 
+
+    context = {
         'form': form,
     }
     return render(request, 'app/add_stock.html', context)
 
 
 def buscar_cliente(request):
-    
+
     form = BuscarClienteForm(request.POST)
 
-    if request.method == 'POST':        
-        
+    if request.method == 'POST':
+
         if form.is_valid():
             clean_doc = form.cleaned_data['documento']
             print('Request: ', clean_doc)
@@ -142,6 +141,7 @@ def buscar_cliente(request):
     }
     return render(request, 'app/buscar_cliente.html', context)
 
+
 def add_cliente(request):
     submitted = False
     if request.method == 'POST':
@@ -158,7 +158,8 @@ def add_cliente(request):
             telefono = cd['telefono']
             email = cd['email']
             obra_social = cd['obra_social']
-            clte = Cliente(documento=documento, nombre=nombre,apellido=apellido, direccion=direccion, telefono=telefono, email=email, obra_social=obra_social)
+            clte = Cliente(documento=documento, nombre=nombre, apellido=apellido,
+                           direccion=direccion, telefono=telefono, email=email, obra_social=obra_social)
             clte.save()
             request.session['clte'] = clte.id
             return redirect('/venta/')
@@ -166,11 +167,10 @@ def add_cliente(request):
         form = ClienteForm()
         if 'submitted' in request.GET:
             submitted = True
-    
+
     context = {
         'form': form,
         'submitted': submitted
-        }
-            
+    }
+
     return render(request, 'app/add_cliente.html', context)
-    
