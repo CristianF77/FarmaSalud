@@ -26,6 +26,8 @@ class Cliente(models.Model):
 
 
 class Personal(models.Model):
+    CARGO = (('Dir', 'Director'), ('CE', 'Comite Ejecutivo'),
+             ('DT', 'Directores Técnicos'), ('Aux', 'Auxiliares'))
 
     documento = models.CharField(
         max_length=20, blank=True, null=True, default=0)
@@ -34,8 +36,8 @@ class Personal(models.Model):
     direccion = models.CharField(max_length=30, blank=True, null=True)
     telefono = models.CharField(max_length=20, blank=True, null=True)
     legajo = models.CharField(max_length=10, blank=True, null=True)
-    # cargo = models.CharField(
-    #     max_length=20, choices=CARGO, blank=True, null=True)
+    cargo = models.CharField(
+        max_length=20, choices=CARGO, blank=True, null=True)
     # sucursal, para saber de que farmacia vamos a reducir el stock del producto
     # farmacia = models.ForeignKey(
     #     Farmacia, on_delete=models.SET_NULL, blank=True, null=True)
@@ -48,8 +50,6 @@ class PersonalSucursal(Personal):
     CARGO = (('Dir', 'Director'), ('CE', 'Comite Ejecutivo'),
              ('DT', 'Directores Técnicos'), ('Aux', 'Auxiliares'))
 
-    cargo = models.CharField(
-        max_length=20, choices=CARGO, blank=True, null=True)
     farmacia = models.ForeignKey(
         Farmacia, on_delete=models.SET_NULL, blank=True, null=True)
 
@@ -57,8 +57,10 @@ class PersonalSucursal(Personal):
         return self.cargo + ' - ' + self.apellido + ' ' + self.nombre
 
 
-# class PersonalEjecutivas(Personal):
-#     pass
+class PersonalEjecutivo(Personal):
+
+    def __str__(self):
+        return self.cargo + ' - ' + self.apellido + ' ' + self.nombre
 
 
 class Producto(models.Model):
@@ -75,7 +77,7 @@ class Producto(models.Model):
         Farmacia, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
-        return str(self.farmacia.num_suc) + ' - ' + self.nombre
+        return str(self.farmacia.num_suc) + ' - ' + self.nombre + ' - ' + str(self.cantidad)
 
 
 class Venta(models.Model):

@@ -1,11 +1,24 @@
 from .models import Venta, Item
 
 
+def controlarStock(producto, cantidad):
+    if producto.cantidad != 0:
+        aux = producto.cantidad - cantidad
+    elif aux >= 0:
+        producto.cantidad = producto.cantidad - cantidad
+        print(producto.cantidad)
+        producto.save()
+        return True
+    else:
+        return False
+
+        
 def reducirCantidad(producto, cantidad):
-    producto.cantidad = producto.cantidad - cantidad
-    print(producto.cantidad)
-    producto.save()
-    return
+    
+        producto.cantidad = producto.cantidad - cantidad
+        print(producto.cantidad)
+        producto.save()
+        return
 
 
 def calcularImporte(num_vta):
@@ -20,3 +33,4 @@ def calcularImporte(num_vta):
     vta.save()
 
     return
+

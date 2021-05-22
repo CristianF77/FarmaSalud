@@ -1,15 +1,15 @@
 {% extends 'app/base.html'%} {% block content%}
 <br></br>
-
-
-{% if hay_stock %}
-    <p class="success">
-         Venta creada
-    </p>
- {% else %}
 <div class = "container">
   <h1 class= "text-center">Crear Item</h1>
   <br>
+    {% if stock %}
+    <p>
+        No hay stock suficiente
+    </p>
+
+    {% else %}
+
     <form action="" method="post" novalidate>
     <table>
     {{ form.as_p }}
@@ -23,8 +23,9 @@
     </table>
     {% csrf_token %}
     </form>
+    
+      
+    {% endif %}
   </table>
 </div>
-
-{% endif %}
 {% endblock%}

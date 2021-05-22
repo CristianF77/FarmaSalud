@@ -17,16 +17,16 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark "> 
-        <a class="nav-link" href=""><h1 class="navbar-brand" style = "font-size: 25px">Farma Salud</h1></a>
+        <a class="nav-link" href="{% url 'home' %}"><h1 class="navbar-brand" style = "font-size: 25px">Farma Salud</h1></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="nav navbar-nav ml-auto">
-           {% comment %} {% if user.is_authenticated%} {% endcomment %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'home' %}">Home</a>
-              </li>
+            {% if user.is_authenticated%}
+              {% comment %} <li class="nav-item">
+                <a class="nav-link" href="">Home</a>
+              </li> {% endcomment %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'stock'%}">Stock</a>
               </li>
@@ -41,10 +41,10 @@
                 <a class="nav-link" href="{% url 'item-create'%}">Crear Item</a>
               </li> {% endcomment %}
               
-              {% comment %} <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout'%}">LOGOUT</a>
-              </li> {% endcomment %}
-            {% comment %} {% endif %} {% endcomment %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout'%}">Logout</a>
+              </li>
+            {% endif %}
           </ul>
      </nav>
     {% block content%}

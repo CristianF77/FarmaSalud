@@ -2,10 +2,12 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Producto, PersonalSucursal, Venta, Item, Cliente, Farmacia
 from .forms import ItemForm, VentaForm, AñadirStock, ClienteForm, BuscarClienteForm
-from .utils import reducirCantidad, calcularImporte
+from .utils import calcularImporte, controlarStock
 from django import forms
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def home(request):
     venta = Venta.objects.all()
     # Calucalar importe
@@ -27,7 +29,7 @@ def productos_stock(request):
     }
     return render(request, 'app/stock.html', context)
 
-
+@login_required
 def personal(request):
     personal_suc = PersonalSucursal.objects.filter(cargo='DT')
     context = {
@@ -35,55 +37,57 @@ def personal(request):
     }
     return render(request, 'app/personal.html', context)
 
-
+@login_required
 def item_create(request, num_vta):
-    submitted = False
+    stock = False
     vta = Venta.objects.get(id=num_vta)
     suc = vta.farmacia
 
+    # Se excluyen los productos sin stock
     ItemForm.base_fields['producto'] = forms.ModelChoiceField(
-        queryset=Producto.objects.filter(farmacia=suc))
+        queryset=Producto.objects.filter(farmacia=suc).exclude(cantidad=0))
 
     if request.method == 'POST':
 
         form = ItemForm(request.POST)
-        print(form)
         if form.is_valid():
             cd = form.cleaned_data
             producto = cd['producto']
             cantidad = cd['cantidad']
-            if producto.cantidad == 0:
-                # Msj no hay stock
-                # hay_stock
-                pass
-            else:
-                i = Item(producto=producto, cantidad=cantidad)
-                i.venta = Venta.objects.get(id=num_vta)
+            i = Item(producto=producto, cantidad=cantidad)
+            i.venta = Venta.objects.get(id=num_vta)
+
+            # Se controlar si hay stock suficiente, True -> reduce la cantidad
+            if controlarStock(producto, cantidad):
                 i.save()
-                reducirCantidad(producto, cantidad)
-                if 'crear-otro' in request.POST:
-                    return redirect('/venta/' + str(num_vta) + '/item/')
-                if 'submitted' in request.POST:
-                    calcularImporte(num_vta)
-                    return redirect('/home/')
+            else:
+                # no hay stock
+                stock = True
+                return redirect('/venta/' + str(num_vta) + '/item/no_stock?stock=True')
+                pass
+
+            if 'crear-otro' in request.POST:
+                return redirect('/venta/' + str(num_vta) + '/item/')
+            if 'submitted' in request.POST:
+                calcularImporte(num_vta)
+                return redirect('/home/')
 
     else:
         form = ItemForm()
-        if 'submitted' in request.GET:
-            submitted = True
+        if 'stock' in request.GET:
+            stock = False
 
     context = {
         'form': form,
-        'submitted': submitted
+        'stock': False,
     }
 
     return render(request, 'app/item_create.html', context)
 
-
+@login_required
 def venta_create(request):
     submitted = False
     clte_id = request.session.get('clte')
-    print(clte_id)
     if request.method == 'POST':
         form = VentaForm(request.POST)
         if form.is_valid():
@@ -93,7 +97,7 @@ def venta_create(request):
             vendedor = cd['vendedor']
             vta = Venta(metodo_pago=metodo, cliente=cliente, vendedor=vendedor)
             vta.save()
-            return HttpResponseRedirect('/venta/' + str(vta.id) + '/item/')
+            return redirect('/venta/' + str(vta.id) + '/item/')
     else:
         form = VentaForm()
         if 'submitted' in request.GET:
@@ -106,7 +110,7 @@ def venta_create(request):
 
     return render(request, 'app/venta_create.html', context)
 
-
+@login_required
 def add_stock(request, pk):
     producto = Producto.objects.get(pk=pk)
     form = AñadirStock(request.POST)
@@ -124,7 +128,7 @@ def add_stock(request, pk):
     }
     return render(request, 'app/add_stock.html', context)
 
-
+@login_required
 def buscar_cliente(request):
 
     form = BuscarClienteForm(request.POST)
@@ -148,7 +152,7 @@ def buscar_cliente(request):
     }
     return render(request, 'app/buscar_cliente.html', context)
 
-
+@login_required
 def add_cliente(request):
     submitted = False
     if request.method == 'POST':
