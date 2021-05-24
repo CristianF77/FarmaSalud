@@ -83,7 +83,7 @@ class Producto(models.Model):
 class Venta(models.Model):
     METODO_PAGO = (('Efectivo', 'Contado'), ('Débito',
                    'Tarjeta de débito'), ('Crédito', 'Tarjeta de crédito'))
-    fecha = models.DateTimeField(auto_now=True)
+    fecha = models.DateTimeField(auto_now=True, editable=True)
     importe = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True)
     metodo_pago = models.CharField(
@@ -96,7 +96,7 @@ class Venta(models.Model):
         Farmacia, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.id) + ' - ' + self.cliente.nombre + ' - ' + str(self.importe)
 
     def save(self, *args, **kwargs):
         total = 0
@@ -128,3 +128,21 @@ class Item(models.Model):
         self.precio = self.producto.precio
         self.importe = self.producto.precio * self.cantidad
         return super().save(*args, **kwargs)
+
+
+class Reportes(models.Model):
+    name = models.CharField(max_length=120)
+    image = models.ImageField(upload_to='app', blank=True)
+    remarks = models.TextField()
+    autor = models.ForeignKey(PersonalEjecutivo, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    # def get_absolute_url(self):
+    #     return reverse('reports:detail', kwargs={'pk': self.pk})
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        ordering = ('-created',)

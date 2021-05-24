@@ -1,10 +1,11 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Producto, PersonalSucursal, Venta, Item, Cliente, Farmacia
-from .forms import ItemForm, VentaForm, AñadirStock, ClienteForm, BuscarClienteForm
+from .forms import ItemForm, VentaForm, AñadirStock, ClienteForm, BuscarClienteForm, SalesSearchForm, ReportForm
 from .utils import calcularImporte, controlarStock
 from django import forms
 from django.contrib.auth.decorators import login_required
+import pandas as pd
 
 
 @login_required
@@ -29,6 +30,7 @@ def productos_stock(request):
     }
     return render(request, 'app/stock.html', context)
 
+
 @login_required
 def personal(request):
     personal_suc = PersonalSucursal.objects.filter(cargo='DT')
@@ -36,6 +38,7 @@ def personal(request):
         'personal_suc': personal_suc,
     }
     return render(request, 'app/personal.html', context)
+
 
 @login_required
 def item_create(request, num_vta):
@@ -84,6 +87,7 @@ def item_create(request, num_vta):
 
     return render(request, 'app/item_create.html', context)
 
+
 @login_required
 def venta_create(request):
     submitted = False
@@ -110,6 +114,7 @@ def venta_create(request):
 
     return render(request, 'app/venta_create.html', context)
 
+
 @login_required
 def add_stock(request, pk):
     producto = Producto.objects.get(pk=pk)
@@ -127,6 +132,7 @@ def add_stock(request, pk):
         'form': form,
     }
     return render(request, 'app/add_stock.html', context)
+
 
 @login_required
 def buscar_cliente(request):
@@ -151,6 +157,7 @@ def buscar_cliente(request):
         'form': form,
     }
     return render(request, 'app/buscar_cliente.html', context)
+
 
 @login_required
 def add_cliente(request):
@@ -185,3 +192,74 @@ def add_cliente(request):
     }
 
     return render(request, 'app/add_cliente.html', context)
+
+
+@login_required
+def reportes(request):
+    sales_df = None
+    positions_df = None
+    merged_df = None
+    df = None
+    chart = None
+    no_data = None
+
+    search_form = SalesSearchForm(request.POST or None)
+    report_form = ReportForm()
+
+    if request.method == 'POST':
+        date_from = request.POST.get('date_from')
+        date_to = request.POST.get('date_to')
+        chart_type = request.POST.get('chart_type')
+        results_by = request.POST.get('results_by')
+
+        qs = Venta.objects.filter(fecha=date_from)
+        print(qs)
+
+        # vta_qs = Venta.objects.filter(fecha__date__lte=date_to,fecha__date__gte=date_from)
+        # if len(vta_qs) > 0:
+        #     sales_df = pd.DataFrame(vta_qs.values())
+        #     sales_df['cliente_id'] = sales_df['cliente_id']
+        #     sales_df['vendedor_id'] = sales_df['vendedor_id']
+        #     sales_df['created'] = sales_df['created'].apply(lambda x: x.strftime('%Y-%m-%d'))
+        #     sales_df.rename({'cliente_id': 'cliente', 'vendedor_id': 'vendedor', 'id': 'sales_id'}, axis=1, inplace=True)
+
+        #     positions_data = []
+        #     for vta in vta_qs:
+        #         for pos in vta.get_positions():
+        #             obj = {
+        #                 'position_id': pos.id,
+        #                 'product': pos.product.name,
+        #                 'quantity': pos.quantity,
+        #                 'price': pos.price,
+        #                 'sales_id': pos.get_sales_id(),
+        #             }
+        #             positions_data.append(obj)
+
+        #     positions_df = pd.DataFrame(positions_data)
+        #     merged_df = pd.merge(sales_df, positions_df, on='sales_id')
+
+        #     df = merged_df.groupby('transaction_id', as_index=False)['price'].agg('sum')
+            
+        #     chart = get_chart(chart_type, sales_df, results_by)
+        #     print('chart', chart)
+        #     sales_df = sales_df.to_html()
+        #     positions_df = positions_df.to_html()
+        #     merged_df = merged_df.to_html()
+        #     df = df.to_html()
+
+        # else: 
+        #     no_data = 'No data is available in this date range'
+
+
+    context = {
+        'search_form': search_form,
+        'report_form': report_form,
+        'sales_df': sales_df,
+        'positions_df': positions_df,
+        'merged_df': merged_df,
+        'df': df,
+        'chart': chart,
+        'no_data': no_data,
+    }
+
+    return render(request, 'app/reportes.html', context)
