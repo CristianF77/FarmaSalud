@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Producto, PersonalSucursal, Venta, Item, Cliente, Farmacia
 from .forms import ItemForm, VentaForm, AñadirStock, ClienteForm, BuscarClienteForm, SalesSearchForm, ReportForm
-from .utils import calcularImporte, controlarStock
+from .utils import calcularImporte, controlarStock, get_cliente_por_id, get_farmacia_por_id, get_vendedor_por_id, get_chart
 from django import forms
 from django.contrib.auth.decorators import login_required
 import pandas as pd
@@ -212,51 +212,42 @@ def reportes(request):
         chart_type = request.POST.get('chart_type')
         results_by = request.POST.get('results_by')
 
-        qs = Venta.objects.filter(fecha=date_from)
-        print(qs)
+        vta_qs = Venta.objects.filter(
+            fecha__date__lte=date_to, fecha__date__gte=date_from)
+        # print(vta_qs)
 
-        # vta_qs = Venta.objects.filter(fecha__date__lte=date_to,fecha__date__gte=date_from)
-        # if len(vta_qs) > 0:
-        #     sales_df = pd.DataFrame(vta_qs.values())
-        #     sales_df['cliente_id'] = sales_df['cliente_id']
-        #     sales_df['vendedor_id'] = sales_df['vendedor_id']
-        #     sales_df['created'] = sales_df['created'].apply(lambda x: x.strftime('%Y-%m-%d'))
-        #     sales_df.rename({'cliente_id': 'cliente', 'vendedor_id': 'vendedor', 'id': 'sales_id'}, axis=1, inplace=True)
+        if len(vta_qs) > 0:
+            venta_df = pd.DataFrame(vta_qs.values())
+            # print(venta_df)
+            venta_df['cliente_id'] = venta_df['cliente_id'].apply(
+                get_cliente_por_id)
+            venta_df['vendedor_id'] = venta_df['vendedor_id'].apply(
+                get_vendedor_por_id)
+            venta_df['farmacia_id'] = venta_df['farmacia_id'].apply(
+                get_farmacia_por_id)
+            venta_df['fecha'] = venta_df['fecha'].apply(
+                lambda x: x.strftime('%d-%m-%Y'))
+            venta_df.rename({'cliente_id': 'cliente', 'vendedor_id': 'vendedor',
+                            'farmacia_id': 'farmacia', 'metodo_pago': 'método'}, axis=1, inplace=True)
+            # print('#################################################')
+            # print(venta_df)
 
-        #     positions_data = []
-        #     for vta in vta_qs:
-        #         for pos in vta.get_positions():
-        #             obj = {
-        #                 'position_id': pos.id,
-        #                 'product': pos.product.name,
-        #                 'quantity': pos.quantity,
-        #                 'price': pos.price,
-        #                 'sales_id': pos.get_sales_id(),
-        #             }
-        #             positions_data.append(obj)
+            df = venta_df.groupby('fecha', as_index=False)[
+                'importe'].agg('sum')
+            # print(df)
 
-        #     positions_df = pd.DataFrame(positions_data)
-        #     merged_df = pd.merge(sales_df, positions_df, on='sales_id')
+            chart = get_chart(chart_type, venta_df, results_by)
 
-        #     df = merged_df.groupby('transaction_id', as_index=False)['price'].agg('sum')
-            
-        #     chart = get_chart(chart_type, sales_df, results_by)
-        #     print('chart', chart)
-        #     sales_df = sales_df.to_html()
-        #     positions_df = positions_df.to_html()
-        #     merged_df = merged_df.to_html()
-        #     df = df.to_html()
+            venta_df = venta_df.to_html()
+            df = df.to_html()
 
-        # else: 
-        #     no_data = 'No data is available in this date range'
-
+        else:
+            no_data = 'No data is available in this date range'
 
     context = {
         'search_form': search_form,
         'report_form': report_form,
-        'sales_df': sales_df,
-        'positions_df': positions_df,
-        'merged_df': merged_df,
+        'venta_df': venta_df,
         'df': df,
         'chart': chart,
         'no_data': no_data,

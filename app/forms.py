@@ -55,8 +55,8 @@ CHART_CHOICES = (
 )
 
 RESULT_CHOICES = (
-    ('#1', 'transaction'),
-    ('#2', 'sales date'),
+    ('#1', 'id'),
+    ('#2', 'fecha'),
 )
 
 class SalesSearchForm(forms.Form):

@@ -23,7 +23,7 @@ home
         <div id="alert-box"></div>
         <form id="report-form" autocomplete="off">
             {% csrf_token %}
-            {{form|crispy}}
+            {{report_form|crispy}}
             <button type="submit" class="btn btn-secondary mt-2">Guardar</button>
         </form>
       </div>
@@ -44,15 +44,9 @@ home
 </form>
 <br>
 
-{% if sales_df %}
+{% if venta_df %}
     sales df
-    {{sales_df|safe}}
-    <br>
-    positions df
-    {{positions_df|safe}}
-    <br>
-    merged df
-    {{merged_df|safe}}
+    {{venta_df|safe}}
     <br>
     grouped by df
     {{df|safe}}
