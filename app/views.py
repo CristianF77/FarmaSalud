@@ -11,7 +11,9 @@ import pandas as pd
 @login_required
 def home(request):
     venta = Venta.objects.all()
-    # Calucalar importe
+    for v in venta:
+        v.fecha = v.fecha.strftime('%d-%m-%Y')
+    
     context = {
         'venta': venta,
     }
@@ -126,7 +128,7 @@ def add_stock(request, pk):
             producto.cantidad += cant
             producto.save()
 
-            return redirect('/home/')
+            return redirect('/stock/')
 
     context = {
         'form': form,
@@ -196,9 +198,7 @@ def add_cliente(request):
 
 @login_required
 def reportes(request):
-    sales_df = None
-    positions_df = None
-    merged_df = None
+    venta_df = None
     df = None
     chart = None
     no_data = None
@@ -207,13 +207,13 @@ def reportes(request):
     report_form = ReportForm()
 
     if request.method == 'POST':
-        date_from = request.POST.get('date_from')
-        date_to = request.POST.get('date_to')
+        desde = request.POST.get('desde')
+        hasta = request.POST.get('hasta')
         chart_type = request.POST.get('chart_type')
         results_by = request.POST.get('results_by')
 
         vta_qs = Venta.objects.filter(
-            fecha__date__lte=date_to, fecha__date__gte=date_from)
+            fecha__date__lte=hasta, fecha__date__gte=desde)
         # print(vta_qs)
 
         if len(vta_qs) > 0:
@@ -229,8 +229,7 @@ def reportes(request):
                 lambda x: x.strftime('%d-%m-%Y'))
             venta_df.rename({'cliente_id': 'cliente', 'vendedor_id': 'vendedor',
                             'farmacia_id': 'farmacia', 'metodo_pago': 'método'}, axis=1, inplace=True)
-            # print('#################################################')
-            # print(venta_df)
+            # venta_df.style.set_properties(**{'text-align':'center'})
 
             df = venta_df.groupby('fecha', as_index=False)[
                 'importe'].agg('sum')
@@ -238,8 +237,8 @@ def reportes(request):
 
             chart = get_chart(chart_type, venta_df, results_by)
 
-            venta_df = venta_df.to_html()
-            df = df.to_html()
+            venta_df = venta_df.to_html(justify='center')
+            df = df.to_html(justify='center')
 
         else:
             no_data = 'No data is available in this date range'

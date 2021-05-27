@@ -79,7 +79,7 @@ def get_graph():
 
 def get_key(res_by):
     if res_by == '#1':
-        key = 'id'
+        key = 'farmacia'
     elif res_by == '#2':
         key = 'fecha'
     return key
@@ -105,3 +105,4 @@ def get_chart(chart_type, data, results_by, **kwargs):
     plt.tight_layout()
     chart = get_graph()
     return chart
+

@@ -48,6 +48,7 @@ class ReportForm(forms.ModelForm):
         model = Reportes
         fields = ('name', 'remarks')
 
+
 CHART_CHOICES = (
     ('#1', 'Bar chart'),
     ('#2', 'Pie chart'),
@@ -55,12 +56,13 @@ CHART_CHOICES = (
 )
 
 RESULT_CHOICES = (
-    ('#1', 'id'),
+    ('#1', 'farmacia'),
     ('#2', 'fecha'),
 )
 
+
 class SalesSearchForm(forms.Form):
-    date_from = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    date_to = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    desde = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    hasta = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     chart_type = forms.ChoiceField(choices=CHART_CHOICES)
     results_by = forms.ChoiceField(choices=RESULT_CHOICES)

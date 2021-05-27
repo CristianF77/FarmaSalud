@@ -2,14 +2,13 @@
 <br></br>
 
 <div class = "container">
-  <h1 class= "text-center">Productos en Stock</h1>
+  <h1 class= "text-left">Productos en Stock</h1>
   <br>
   <table class="table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">Nombre</th>
         <th scope="col">Cantidad</th>
-        {% comment %} <th scope="col">codigo_barras</th>         {% endcomment %}
         <th scope="col">Precio</th>
         <th scope="col">Tipo</th>
         <th scope="col">Farmacia</th>
@@ -19,8 +18,11 @@
     <tbody>
       <tr>    
         <td>{{producto.nombre}}</td>
-        <td>{{producto.cantidad}}</td>
-        {% comment %} <td>{{producto.codigo_barras}}</td> {% endcomment %}
+        {% if producto.cantidad < 20 %}
+          <td bgcolor="red">{{producto.cantidad}}</td>
+        {% else %}
+          <td>{{producto.cantidad}}</td>
+        {% endif %}
         <td>{{producto.precio}}</td>
         <td>{{producto.venta_Libre}}</td>
         <td>{{producto.farmacia}}</td>
@@ -34,5 +36,6 @@
     </tbody>
     {% endfor %}
   </table>
+  <hr> 
 </div>
 {% endblock%}

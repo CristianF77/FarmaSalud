@@ -45,13 +45,22 @@ home
 <br>
 
 {% if venta_df %}
-    sales df
-    {{venta_df|safe}}
+    
+    <div align="center">
+      <h3>Venta DataFrame</h3>
+      {{venta_df|safe}}
+    </div>
     <br>
-    grouped by df
-    {{df|safe}}
+    
+    {% comment %} <div align="center">
+      <h3>Groupe by DataFrame</h3>
+      {{df|safe}}
+    </div> {% endcomment %}
     <br>
-    <img src="data:image/png;base64, {{chart|safe}}" id='img'>
+    <div align="center">
+      <img src="data:image/png;base64, {{chart|safe}}" id='img'>
+    </div>
+
 {% endif %}
 
 <br>
