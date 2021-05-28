@@ -82,6 +82,7 @@ DATABASES = {
     }
 }
 
+# AUTH_USER_MODEL = 'app.PersonalEjecutivo'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -124,8 +125,12 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIR = [
-    os.path.join(BASE_DIR, 'app/static')
+    BASE_DIR + '/app/static',
 ]
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 

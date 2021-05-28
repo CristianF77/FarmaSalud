@@ -2,9 +2,13 @@ from .models import Venta, Item, PersonalSucursal, Farmacia, Cliente
 import base64
 import uuid
 from django.core.files.base import ContentFile
-from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+from io import BytesIO
+from xhtml2pdf import pisa
 
 
 def controlarStock(producto, cantidad):
@@ -79,9 +83,9 @@ def get_graph():
 
 def get_key(res_by):
     if res_by == '#1':
-        key = 'farmacia'
+        key = 'Farmacia'
     elif res_by == '#2':
-        key = 'fecha'
+        key = 'Fecha'
     return key
 
 
@@ -89,16 +93,16 @@ def get_chart(chart_type, data, results_by, **kwargs):
     plt.switch_backend('AGG')
     fig = plt.figure(figsize=(10, 4))
     key = get_key(results_by)
-    d = data.groupby(key, as_index=False)['importe'].agg('sum')
+    d = data.groupby(key, as_index=False)['Importe'].agg('sum')
     if chart_type == '#1':
         # print('bar chart')
-        sns.barplot(x=key, y='importe', data=d)
+        sns.barplot(x=key, y='Importe', data=d)
     elif chart_type == '#2':
         # print('pie chart')
-        plt.pie(data=d, x='importe', labels=d[key].values)
+        plt.pie(data=d, x='Importe', labels=d[key].values)
     elif chart_type == '#3':
         # print('line chart')
-        plt.plot(d[key], d['importe'], color='green',
+        plt.plot(d[key], d['Importe'], color='green',
                  marker='o', linestyle='dashed')
     else:
         print('ups... failed to identify the chart type')
@@ -106,3 +110,12 @@ def get_chart(chart_type, data, results_by, **kwargs):
     chart = get_graph()
     return chart
 
+
+def render_to_pdf(template_src, context_dict={}):
+    template = get_template(template_src)
+    html  = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None

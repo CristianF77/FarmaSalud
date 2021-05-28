@@ -2,10 +2,13 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Producto, PersonalSucursal, Venta, Item, Cliente, Farmacia
 from .forms import ItemForm, VentaForm, AñadirStock, ClienteForm, BuscarClienteForm, SalesSearchForm, ReportForm
-from .utils import calcularImporte, controlarStock, get_cliente_por_id, get_farmacia_por_id, get_vendedor_por_id, get_chart
+from .utils import calcularImporte, controlarStock, get_cliente_por_id, get_farmacia_por_id, get_vendedor_por_id, get_chart, render_to_pdf
 from django import forms
 from django.contrib.auth.decorators import login_required
 import pandas as pd
+from django.views.generic import View
+import datetime
+import time
 
 
 @login_required
@@ -13,7 +16,7 @@ def home(request):
     venta = Venta.objects.all()
     for v in venta:
         v.fecha = v.fecha.strftime('%d-%m-%Y')
-    
+
     context = {
         'venta': venta,
     }
@@ -227,21 +230,49 @@ def reportes(request):
                 get_farmacia_por_id)
             venta_df['fecha'] = venta_df['fecha'].apply(
                 lambda x: x.strftime('%d-%m-%Y'))
-            venta_df.rename({'cliente_id': 'cliente', 'vendedor_id': 'vendedor',
-                            'farmacia_id': 'farmacia', 'metodo_pago': 'método'}, axis=1, inplace=True)
-            # venta_df.style.set_properties(**{'text-align':'center'})
+            venta_df.rename({'fecha': 'Fecha', 'importe': 'Importe', 'cliente_id': 'Cliente', 'vendedor_id': 'Vendedor',
+                            'farmacia_id': 'Farmacia', 'metodo_pago': 'Método'}, axis=1, inplace=True)
 
-            df = venta_df.groupby('fecha', as_index=False)[
-                'importe'].agg('sum')
+            # venta_df.style.set_properties(**{'text-align': 'center'})
+
+            if results_by == '#1':
+                resultado = 'Farmacia'
+            elif results_by == '#2':
+                resultado = 'Fecha'
+
+            df = venta_df.groupby(resultado, as_index=False)[
+                'Importe'].agg('sum')
+
             # print(df)
 
             chart = get_chart(chart_type, venta_df, results_by)
 
-            venta_df = venta_df.to_html(justify='center')
-            df = df.to_html(justify='center')
+            venta_df = venta_df.to_html()
+
+            df = df.to_html(justify='left')
+
+            # time.sleep(2)
+            # request.session['desde'] = desde
+            # request.session['hasta'] = hasta
+
+            # if results_by == '#1':
+            #     resultado = 'Farmacia'
+            # elif results_by == '#2':
+            #     resultado = 'Fecha'
+
+            # request.session['resultado'] = resultado
+            # request.session['venta_df'] = venta_df
+            # request.session['chart'] = chart
+            # return redirect('/pdf/')
 
         else:
-            no_data = 'No data is available in this date range'
+            no_data = 'No hay datos en el rango indicado'
+
+        if 'exportar' in request.POST:
+            # request.session['venta_df'] = venta_df
+            # request.session['chart'] = chart
+
+            return redirect('/pdf/')
 
     context = {
         'search_form': search_form,
@@ -253,3 +284,21 @@ def reportes(request):
     }
 
     return render(request, 'app/reportes.html', context)
+
+
+def generate_view(request, *args, **kwargs):
+
+    venta_df = request.session.get('venta_df')
+    chart = request.session.get('chart')
+    desde = request.session.get('desde')
+    hasta = request.session.get('hasta')
+    resultado = request.session.get('resultado')
+    data = {
+        'venta_df': venta_df,
+        'chart': chart,
+        'desde': desde,
+        'hasta': hasta,
+        'resultado': resultado,
+    }
+    pdf = render_to_pdf('app/invoice.html', data)
+    return HttpResponse(pdf, content_type='application/pdf')

@@ -49,6 +49,8 @@ home
     <div align="center">
       <h3>Venta DataFrame</h3>
       {{venta_df|safe}}
+      <hr>
+      {{df|safe}}
     </div>
     <br>
     
@@ -59,11 +61,14 @@ home
     <br>
     <div align="center">
       <img src="data:image/png;base64, {{chart|safe}}" id='img'>
+      <hr>
+      {% comment %} <button class="btn btn-secondary" type="submit" value="exportar">Generar PDF</button> {% endcomment %}
+      <input class="btn btn-secondary" name='exportar' type="submit" value="Generar PDF">
+      <br>
+      <hr>
     </div>
 
 {% endif %}
 
-<br>
-<button class="btn btn-secondary not-visible" id="report-btn" data-bs-toggle="modal" data-bs-target="#reportModal">Añadir reporte</button>
 
 {% endblock content %}

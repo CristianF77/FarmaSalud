@@ -1,4 +1,5 @@
 from django.db import models
+# from django.contrib.auth.models import AbstractUser
 
 
 class Farmacia(models.Model):
@@ -26,9 +27,6 @@ class Cliente(models.Model):
 
 
 class Personal(models.Model):
-    CARGO = (('Dir', 'Director'), ('CE', 'Comite Ejecutivo'),
-             ('DT', 'Directores Técnicos'), ('Aux', 'Auxiliares'))
-
     documento = models.CharField(
         max_length=20, blank=True, null=True, default=0)
     nombre = models.CharField(max_length=20, blank=True, null=True)
@@ -36,11 +34,6 @@ class Personal(models.Model):
     direccion = models.CharField(max_length=30, blank=True, null=True)
     telefono = models.CharField(max_length=20, blank=True, null=True)
     legajo = models.CharField(max_length=10, blank=True, null=True)
-    cargo = models.CharField(
-        max_length=20, choices=CARGO, blank=True, null=True)
-    # sucursal, para saber de que farmacia vamos a reducir el stock del producto
-    # farmacia = models.ForeignKey(
-    #     Farmacia, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -50,6 +43,8 @@ class PersonalSucursal(Personal):
     CARGO = (('Dir', 'Director'), ('CE', 'Comite Ejecutivo'),
              ('DT', 'Directores Técnicos'), ('Aux', 'Auxiliares'))
 
+    cargo = models.CharField(
+        max_length=20, choices=CARGO, blank=True, null=True)
     farmacia = models.ForeignKey(
         Farmacia, on_delete=models.SET_NULL, blank=True, null=True)
 
@@ -58,9 +53,12 @@ class PersonalSucursal(Personal):
 
 
 class PersonalEjecutivo(Personal):
+    pass
+    # departamento = models.CharField(max_length=20, blank=True, null=True)
+    # password = models.models.CharField(widget=forms.PasswordInput)
 
-    def __str__(self):
-        return self.cargo + ' - ' + self.apellido + ' ' + self.nombre
+    # def __str__(self):
+    #     return self.last_name + ' ' + self.first_name
 
 
 class Producto(models.Model):
