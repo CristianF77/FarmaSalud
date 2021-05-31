@@ -1,31 +1,38 @@
 {% extends 'app/base.html'%} {% block content%}
 <br></br>
-<div class = "container">
-  <h1 class= "text-center">Crear Item</h1>
-  <br>
-    {% if stock %}
-    <p>
-        No hay stock suficiente
-    </p>
 
-    {% else %}
+{% if user.is_authenticated %}
+  {% if permiso %}
+    <div class = "container">
+      <h1 class= "text-center">Crear Item</h1>
+      <br>
+        {% if stock %}
+        <p>
+            No hay stock suficiente
+        </p>
 
-    <form action="" method="post" novalidate>
-    <table>
-    {{ form.as_p }}
-    <tr>
-    <td>&nbsp;</td>
-    <td>
-      <input name='submitted' type="submit" value="Submit">
-      <input name='crear-otro' type="submit" value="Crear otro Item?">
-      </td>
-    </tr>
-    </table>
-    {% csrf_token %}
-    </form>
-    
-      
-    {% endif %}
-  </table>
-</div>
+        {% else %}
+
+        <form action="" method="post" novalidate>
+        <table>
+        {{ form.as_p }}
+        <tr>
+        <td>&nbsp;</td>
+        <td>
+          <input name='submitted' type="submit" value="Submit">
+          <input name='crear-otro' type="submit" value="Crear otro Item?">
+          </td>
+        </tr>
+        </table>
+        {% csrf_token %}
+        </form>
+        
+          
+        {% endif %}
+      </table>
+    </div>
+  {% else %}
+    <h2 class="text-center">No tiene permisos para esta vista</h2>
+  {% endif %}
+{% endif %}
 {% endblock%}

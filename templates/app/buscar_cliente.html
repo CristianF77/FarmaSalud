@@ -1,6 +1,7 @@
 {% extends 'app/base.html'%} {% block content%}
 <br></br>
 
+{% if user.is_authenticated %}
 <div class = "container">
   <h1 class= "text-center">Buscar Cliente</h1>
   <br>
@@ -25,4 +26,6 @@
  {% endif %}
   </table>
 </div>
+
+{% endif %}
 {% endblock%}

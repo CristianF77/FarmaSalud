@@ -5,15 +5,17 @@
 <br/>
 
 {% if user.is_authenticated %}
-<div class="container">
-  <form method="POST" action = "">
-    <h1 class = "text-center
-    ">Añadir stock</h1><br>
-    {% csrf_token %} 
-    {{form | crispy}}
-    <br>
-    <input type = "submit" class="btn btn-secondary btn"type="button">
-  </form>
-</div>
+  {% if permiso %}
+  <div class="container">
+    <form method="POST" action = "">
+      <h2 class = "text-center
+      ">Añadir stock a {{ nombre }}</h2><br>
+      {% csrf_token %} 
+      {{form | crispy}}
+      <br>
+      <input type = "submit" class="btn btn-secondary btn"type="button">
+    </form>
+  </div>
+  {% endif %}
 {% endif %}
 {% endblock %}
