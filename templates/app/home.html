@@ -3,6 +3,7 @@
 {% block content%}
 <br></br>
 
+{% if permiso %}
 <div class = "container">
   <h1 class= "text-center">Listado de Ventas</h1>
   <br>
@@ -33,6 +34,9 @@
     {% endfor %}
   </table>
 </div>
-
+{% else%}
+<h2>No tiene permiso para esta visata!</h2>
+{% endif %}
+{% csrf_token %}
 
 {% endblock%}

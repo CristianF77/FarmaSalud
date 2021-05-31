@@ -1,28 +1,39 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Producto, PersonalSucursal, Venta, Item, Cliente, Farmacia
+from .models import Producto, PersonalSucursal, Venta, Item, Cliente, Farmacia, User
 from .forms import ItemForm, VentaForm, AñadirStock, ClienteForm, BuscarClienteForm, SalesSearchForm, ReportForm
-from .utils import calcularImporte, controlarStock, get_cliente_por_id, get_farmacia_por_id, get_vendedor_por_id, get_chart, render_to_pdf
+from .utils import calcularImporte, controlarStock, get_cliente_por_id, get_farmacia_por_id, get_vendedor_por_id, get_chart, render_to_pdf, controlar_dt
 from django import forms
 from django.contrib.auth.decorators import login_required
 import pandas as pd
 from django.views.generic import View
 import datetime
 import time
+from django.contrib import messages
 
 
 @login_required
 def home(request):
-    venta = Venta.objects.all()
-    for v in venta:
-        v.fecha = v.fecha.strftime('%d-%m-%Y')
+    username = None
+    if request.user.is_authenticated:
+        username = request.user
+        if controlar_dt(username):
+            venta = Venta.objects.all()
+            for v in venta:
+                v.fecha = v.fecha.strftime('%d-%m-%Y')
+                permiso = True
+        else:
+            venta = None
+            permiso = False
 
     context = {
         'venta': venta,
+        'permiso': permiso,
     }
     return render(request, 'app/home.html', context)
 
 
+@login_required
 def productos_stock(request):
     productos = Producto.objects.all()
 
@@ -47,43 +58,52 @@ def personal(request):
 
 @login_required
 def item_create(request, num_vta):
-    stock = False
-    vta = Venta.objects.get(id=num_vta)
-    suc = vta.farmacia
 
-    # Se excluyen los productos sin stock
-    ItemForm.base_fields['producto'] = forms.ModelChoiceField(
-        queryset=Producto.objects.filter(farmacia=suc).exclude(cantidad=0))
-
-    if request.method == 'POST':
-
-        form = ItemForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            producto = cd['producto']
-            cantidad = cd['cantidad']
-            i = Item(producto=producto, cantidad=cantidad)
-            i.venta = Venta.objects.get(id=num_vta)
-
-            # Se controlar si hay stock suficiente, True -> reduce la cantidad
-            if controlarStock(producto, cantidad):
-                i.save()
-            else:
-                # no hay stock
-                stock = True
-                return redirect('/venta/' + str(num_vta) + '/item/no_stock?stock=True')
-                pass
-
-            if 'crear-otro' in request.POST:
-                return redirect('/venta/' + str(num_vta) + '/item/')
-            if 'submitted' in request.POST:
-                calcularImporte(num_vta)
-                return redirect('/home/')
-
-    else:
-        form = ItemForm()
-        if 'stock' in request.GET:
+    username = None
+    if request.user.is_authenticated:
+        username = request.user
+        if controlar_dt(username):
             stock = False
+            vta = Venta.objects.get(id=num_vta)
+            suc = vta.farmacia
+
+            # Se excluyen los productos sin stock
+            ItemForm.base_fields['producto'] = forms.ModelChoiceField(
+                queryset=Producto.objects.filter(farmacia=suc).exclude(cantidad=0))
+
+            if request.method == 'POST':
+
+                form = ItemForm(request.POST)
+                if form.is_valid():
+                    cd = form.cleaned_data
+                    producto = cd['producto']
+                    cantidad = cd['cantidad']
+                    i = Item(producto=producto, cantidad=cantidad)
+                    i.venta = Venta.objects.get(id=num_vta)
+
+                    # Se controlar si hay stock suficiente, True -> reduce la cantidad
+                    if controlarStock(producto, cantidad):
+                        i.save()
+                    else:
+                        # no hay stock
+                        stock = True
+                        return redirect('/venta/' + str(num_vta) + '/item/no_stock?stock=True')
+                        pass
+
+                    if 'crear-otro' in request.POST:
+                        return redirect('/venta/' + str(num_vta) + '/item/')
+                    if 'submitted' in request.POST:
+                        calcularImporte(num_vta)
+                        messages.success(request, "Items creados con éxito")
+                        return redirect('/home/')
+
+            else:
+                form = ItemForm()
+                if 'stock' in request.GET:
+                    stock = False
+        else:
+            stock = None
+            permiso = False
 
     context = {
         'form': form,
@@ -106,6 +126,7 @@ def venta_create(request):
             vendedor = cd['vendedor']
             vta = Venta(metodo_pago=metodo, cliente=cliente, vendedor=vendedor)
             vta.save()
+            messages.success(request, "Venta creado con éxito")
             return redirect('/venta/' + str(vta.id) + '/item/')
     else:
         form = VentaForm()
@@ -130,6 +151,7 @@ def add_stock(request, pk):
             cant = int(request.POST['cantidad'])
             producto.cantidad += cant
             producto.save()
+            messages.success(request, "Producto añadido con éxito")
 
             return redirect('/stock/')
 
@@ -185,6 +207,7 @@ def add_cliente(request):
                            direccion=direccion, telefono=telefono, email=email, obra_social=obra_social)
             clte.save()
             request.session['clte'] = clte.id
+            messages.success(request, "Cliente creado con éxito")
             return redirect('/venta/')
     else:
         form = ClienteForm()

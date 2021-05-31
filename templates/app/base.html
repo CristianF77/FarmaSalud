@@ -23,10 +23,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="nav navbar-nav ml-auto">
-            {% if user.is_authenticated%}
-              {% comment %} <li class="nav-item">
-                <a class="nav-link" href="">Home</a>
-              </li> {% endcomment %}
+            {% if user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'stock'%}">Stock</a>
               </li>
@@ -37,9 +34,9 @@
                 <a class="nav-link" href="{% url 'venta-create'%}">Crear Venta</a>
               </li>
               
-              {% comment %} <li class="nav-item">
-                <a class="nav-link" href="{% url 'item-create'%}">Crear Item</a>
-              </li> {% endcomment %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'reportes'%}">Reportes</a>
+              </li>
               
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'logout'%}">Logout</a>
@@ -47,6 +44,8 @@
             {% endif %}
           </ul>
      </nav>
+    {% csrf_token %}
+
     {% block content%}
     {% endblock%}
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

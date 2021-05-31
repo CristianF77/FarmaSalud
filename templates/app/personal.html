@@ -18,6 +18,7 @@
         
       </tr>
     </thead>
+    {% csrf_token %}
     {% for p in personal_suc%}
     <tbody>
       <tr>    
@@ -30,7 +31,7 @@
         <td>{{p.telefono}}</td>
         <td>{{p.farmacia}}</td>
       </tr>
-    </tbody>
+    </tbody> 
     {% endfor %}
   </table>
 </div>

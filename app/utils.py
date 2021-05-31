@@ -10,16 +10,23 @@ import seaborn as sns
 from io import BytesIO
 from xhtml2pdf import pisa
 
+from django.contrib.auth.models import Group, User
+
 
 def controlarStock(producto, cantidad):
     if producto.cantidad != 0:
+        print("Dentro if")
         aux = producto.cantidad - cantidad
-    elif aux >= 0:
-        producto.cantidad = producto.cantidad - cantidad
-        print(producto.cantidad)
-        producto.save()
-        return True
+        if aux >= 0:
+            print("Dentro elif")
+            producto.cantidad = producto.cantidad - cantidad
+            print(producto.cantidad)
+            producto.save()
+            return True
+        else:
+            return False
     else:
+        print("Dentro else")
         return False
 
 
@@ -113,9 +120,26 @@ def get_chart(chart_type, data, results_by, **kwargs):
 
 def render_to_pdf(template_src, context_dict={}):
     template = get_template(template_src)
-    html  = template.render(context_dict)
+    html = template.render(context_dict)
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
     if not pdf.err:
         return HttpResponse(result.getvalue(), content_type='application/pdf')
     return None
+
+
+def controlar_dt(data):
+    try:
+        user_group = PersonalSucursal.objects.get(user=data)
+        return True
+        # print('Usuario: ', user_group.permisos.name)
+        # if user_group.permisos.name == 'Director Técnico':
+        #     print('if')
+        #     return True
+        # else:
+        #     print('else')
+        #     return False
+    except Exception as e:
+        return False
+    
+    
