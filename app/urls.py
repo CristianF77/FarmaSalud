@@ -7,6 +7,7 @@ urlpatterns = [
     path('pdf/', views.generate_view, name='pdf'),
     path('stock/add/<int:pk>', views.add_stock, name='add-stock'),
     path('stock/', views.productos_stock, name='stock'),
+    path('stock/all/', views.stock_total, name='stock-total'),
 
     path('personal/', views.personal, name='personal'),
     path('reportes/', views.reportes, name='reportes'),

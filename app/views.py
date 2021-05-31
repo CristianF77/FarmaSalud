@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Producto, PersonalSucursal, Venta, Item, Cliente, Farmacia, User
-from .forms import ItemForm, VentaForm, AñadirStock, ClienteForm, BuscarClienteForm, SalesSearchForm, ReportForm
+from .forms import ItemForm, VentaForm, AñadirStock, ClienteForm, BuscarClienteForm, SalesSearchForm, ReportForm, FarmaciaForm
 from .utils import calcularImporte, controlarStock, get_cliente_por_id, get_farmacia_por_id, get_vendedor_por_id, get_chart, render_to_pdf, controlar_dt
 from django import forms
 from django.contrib.auth.decorators import login_required
@@ -38,17 +38,18 @@ def home(request):
 def productos_stock(request):
     permiso = None
     username = None
-
-    productos = Producto.objects.all()
+    farmacia = None
+    productos = None
 
     if request.user.is_authenticated:
         username = request.user
         if controlar_dt(username):
             permiso = True
+            personal = PersonalSucursal.objects.get(user=username)
+            productos = Producto.objects.filter(farmacia=personal.farmacia)
             if request.method == 'POST':
-                print(request.POST['id'])
-                redirect('/stock/add/' + request.POST['id'])
-
+                if 'add' in request.POST:
+                    redirect('/stock/add/' + request.POST['id'])
         else:
             permiso = False
 
@@ -57,6 +58,27 @@ def productos_stock(request):
         'permiso': permiso,
     }
     return render(request, 'app/stock.html', context)
+
+@login_required
+def stock_total(request):
+    permiso = None
+    username = None
+
+    productos = Producto.objects.all()
+
+    if request.user.is_authenticated:
+        username = request.user
+        if not controlar_dt(username):
+            permiso = True
+
+        else:
+            permiso = False
+
+    context = {
+        'productos': productos,
+        'permiso': permiso,
+    }
+    return render(request, 'app/stock_total.html', context)
 
 
 @login_required
@@ -353,6 +375,7 @@ def reportes(request):
     }
 
     return render(request, 'app/reportes.html', context)
+
 
 @login_required
 def generate_view(request, *args, **kwargs):

@@ -29,13 +29,7 @@
         <td>{{producto.venta_Libre}}</td>
         <td>{{producto.farmacia}}</td>
         {% if permiso %}
-        <td><a href="{% url 'add-stock' producto.id %}"
-              ><input
-                name="add"
-                type="button"
-                value="Añadir Stock"
-                class="btn btn-secondary btn"
-            /></a></td>
+        
         {% endif%}
       </tr>
     </tbody>

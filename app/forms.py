@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 
-from .models import Item, Producto, Venta, PersonalSucursal, Cliente, Reportes
+from .models import Item, Producto, Venta, PersonalSucursal, Cliente, Reportes, Farmacia
 
 
 # class ItemForm(forms.Form, farmacia):
@@ -23,6 +23,10 @@ class VentaForm(forms.Form):
     cliente = forms.ModelChoiceField(
         required=True, queryset=Cliente.objects.all())
     metodo = forms.ChoiceField(choices=METODO_PAGO, label='Método de pago')
+
+class FarmaciaForm(forms.Form):
+    farmacia = forms.ModelChoiceField(required=True, queryset=Farmacia.objects.all())
+
 
 
 class AñadirStock(ModelForm):
