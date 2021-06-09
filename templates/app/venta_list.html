@@ -39,7 +39,7 @@
         <td>{{v.cliente}}</td>
         <td>{{v.metodo_pago}}</td>
         <td>{{v.vendedor}}</td>
-        <td><a class="btn btn-secondary btn" href="{% url 'venta-detail' v.id %}">Ver</a></td>
+        <td><a class="btn btn-secondary btn" href="{% url 'venta-final' v.id %}">Ver</a></td>
         <td><a class="btn btn-secondary btn" href="{% url 'venta-update' v.id %}">Editar</a></td>
         <td><a class="btn btn-secondary btn" href="{% url 'venta-delete' v.id %}">Eliminar</a></td>
       </tr>

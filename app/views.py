@@ -49,7 +49,6 @@ def home(request):
     return render(request, 'app/home.html', context)
 
 
-
 @login_required
 def item_create(request, pk):
     permiso = None
@@ -58,7 +57,7 @@ def item_create(request, pk):
 
     num_vta = request.session.get('num_vta')
     nombre = request.session.get('prod_name')
-    # print(num_vta)
+    print('venta Item: ', num_vta)
 
     if request.user.is_authenticated:
         username = request.user
@@ -84,7 +83,7 @@ def item_create(request, pk):
                     # Controlo que haya stock suficiente
                     if cantidad < producto.cantidad:
                         i = Item(producto=producto, cantidad=cantidad)
-                        i.venta = Venta.objects.get(id=num_vta)
+                        i.venta = vta
                         i.save()
 
                         if 'crear-otro' in request.POST:
@@ -92,14 +91,17 @@ def item_create(request, pk):
                             return redirect('/producto/list/')
                         if 'submitted' in request.POST:
                             print('submitted')
+
                             calcularImporte(num_vta)
                             messages.success(
                                 request, "Items creados con éxito")
-                            request.session['num_vta'] = None
-                            return redirect('/home/')
+
+                            return redirect('/venta/final/' + num_vta + '/')
                     else:
                         messages.warning(request, "No hay suficiente stock")
                         return redirect('/producto/list/')
+
+                    request.session['num_vta'] = None
 
             else:
                 form = ItemForm()
@@ -147,7 +149,7 @@ def venta_create(request, pk):
                                 cliente=cliente, vendedor=vendedor, farmacia=farmacia)
                     vta.save()
                     request.session['num_vta'] = str(vta.id)
-                    print(vta.id)
+                    print('venta n°: ', vta.id)
                     messages.success(request, "Venta creado con éxito")
                     return redirect('/producto/list/')
             else:
@@ -165,6 +167,32 @@ def venta_create(request, pk):
     }
 
     return render(request, 'app/venta_create.html', context)
+
+
+def venta_final(request, pk):
+    submitted = False
+    permiso = None
+    username = None
+    venta = None
+    items = None
+
+    if request.user.is_authenticated:
+        username = request.user
+        if controlar_dt(username):
+            permiso = True
+            venta = Venta.objects.get(id=pk)
+            items = Item.objects.filter(venta=pk)
+
+    else:        
+        permiso = False
+
+    context = {
+        'Venta': venta,
+        'Item': items,
+        'permiso': permiso,
+    }
+
+    return render(request, 'app/venta_final.html', context)
 
 
 @login_required

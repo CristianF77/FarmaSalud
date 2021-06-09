@@ -1,0 +1,60 @@
+{% extends 'app/base.html'%}
+
+{% block content%}
+<br></br>
+
+
+<div class = "container">
+  <h1 class= "text-center">Venta N° 00{{Venta.id}}</h1>
+  <br>
+
+  <a class="btn btn-secondary btn" href="{% url 'venta-list' %}">Volver</a>
+  <hr>
+  <hr>
+<table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Fecha</th>
+        <th scope="col">Importe Total</th>        
+        <th scope="col">Cliente</th>
+        <th scope="col">Metodo_pago</th>
+        <th scope="col">Vendedor</th>                
+      </tr>
+    </thead>
+    <tbody>
+      <tr>    
+        <td>{{Venta.fecha}}</td>
+        <td>${{Venta.importe}}</td>
+        <td>{{Venta.cliente}}</td>
+        <td>{{Venta.metodo_pago}}</td>
+        <td>{{Venta.vendedor}}</td>
+      </tr>
+    </tbody>
+
+  </table>
+  <hr>
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Producto</th>
+        <th scope="col">Precio</th>        
+        <th scope="col">Cantidad</th>
+        <th scope="col">Importe</th>        
+      </tr>
+    </thead>
+    {% for i in Item %}
+    <tbody>
+      <tr>    
+        <td>{{i.producto.nombre}}</td>
+        <td>${{i.precio}}</td>
+        <td>{{i.cantidad}}</td>
+        <td>${{i.importe}}</td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+</div>
+{% csrf_token %}
+
+{% endblock%}

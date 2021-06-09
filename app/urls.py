@@ -15,6 +15,7 @@ urlpatterns = [
     path('venta/<int:pk>/', VentaDetail.as_view(), name='venta-detail'),
     path('venta/edit/<int:pk>/', VentaUpdate.as_view(), name='venta-update'),
     path('venta/delete/<int:pk>/', VentaDelete.as_view(), name='venta-delete'),
+    path('venta/final/<int:pk>/', views.venta_final, name='venta-final'),
 
 
     path('cliente/list/', ClienteList.as_view(), name='cliente-list'),
