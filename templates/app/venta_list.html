@@ -1,0 +1,52 @@
+{% extends 'app/base.html'%}
+
+{% block content%}
+<br></br>
+
+
+<div class = "container">
+  <h1 class= "text-center">Listado de Ventas</h1>
+  <br>
+
+  <a class="btn btn-secondary btn" href="{% url 'cliente-list' %}">Crear Venta</a>
+  <hr>
+  <form method="GET">
+    <input type="text" name="search-area">
+    <input type="submit" value="Buscar">
+  </form>
+  <hr>
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Venta N°</th>
+        <th scope="col">Fecha</th>
+        <th scope="col">Importe</th>        
+        <th scope="col">Cliente</th>
+        <th scope="col">Metodo_pago</th>
+        <th scope="col">Vendedor</th>        
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        
+      </tr>
+    </thead>
+    {% for v in Venta %}
+    <tbody>
+      <tr>    
+        <td>{{v.id}}</td>
+        <td>{{v.fecha}}</td>
+        <td>{{v.importe}}</td>
+        <td>{{v.cliente}}</td>
+        <td>{{v.metodo_pago}}</td>
+        <td>{{v.vendedor}}</td>
+        <td><a class="btn btn-secondary btn" href="{% url 'venta-detail' v.id %}">Ver</a></td>
+        <td><a class="btn btn-secondary btn" href="{% url 'venta-update' v.id %}">Editar</a></td>
+        <td><a class="btn btn-secondary btn" href="{% url 'venta-delete' v.id %}">Eliminar</a></td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+</div>
+{% csrf_token %}
+
+{% endblock%}

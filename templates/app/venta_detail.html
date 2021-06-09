@@ -1,0 +1,8 @@
+{% extends 'app/base.html'%}
+
+{% block content%}
+<a href="{% url 'venta-list'%}">Volver</a>
+{{Venta}}
+{% csrf_token %}
+
+{% endblock%}

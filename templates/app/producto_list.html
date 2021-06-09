@@ -1,0 +1,49 @@
+{% extends 'app/base.html'%} {% block content%} <br /><br />
+
+<div class="container">
+  <h1 class="text-center">Listado de Productos</h1>
+  <br />
+
+  {% comment %} <a class="btn btn-secondary btn" href="{% url 'producto-create' %}">Crear Venta</a> {% endcomment %}
+  <hr />
+  <form method="GET">
+    <input type="text" name="search-area" />
+    <input type="submit" value="Buscar" />
+  </form>
+  <hr />
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Código de Barras</th>
+        <th scope="col">Precio</th>
+        <th scope="col">Stock</th>
+        <th scope="col">Tipo de Venta</th>
+        <th scope="col">Farmacia</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    {% for p in Producto %}
+    <tbody>
+      <tr>
+        <td>{{p.nombre}}</td>
+        <td>{{p.codigo_barras}}</td>
+        <td>{{p.precio}}</td>
+        <td>{{p.cantidad}}</td>
+        <td>{{p.venta_Libre}}</td>
+        <td>{{p.farmacia}}</td>
+        <td><a class="btn btn-secondary btn" href="{% url 'producto-detail' p.id %}">Ver</a></td>
+        <td><a class="btn btn-secondary btn" href="{% url 'producto-update' p.id %}">Editar</a></td>
+        <td><a class="btn btn-secondary btn" href="{% url 'producto-delete' p.id %}">Eliminar</a></td>
+        {% if p.cantidad > 0 %}
+          <td><a class="btn btn-secondary btn" href="{% url 'item-create' p.id %}">Agregar</a></td>
+        {% endif %}
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+</div>
+{% csrf_token %} {% endblock%}

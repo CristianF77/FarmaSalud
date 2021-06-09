@@ -4,7 +4,7 @@
 {% if user.is_authenticated %}
   {% if permiso %}
     <div class = "container">
-      <h1 class= "text-center">Crear Item</h1>
+      <h1 class= "text-center">Añadir producto - {{producto}}</h1>
       <br>
         {% if stock %}
         <p>
@@ -13,14 +13,14 @@
 
         {% else %}
 
-        <form action="" method="post" novalidate>
+        <form action="" method="POST" novalidate>
         <table>
         {{ form.as_p }}
         <tr>
         <td>&nbsp;</td>
         <td>
-          <input name='submitted' type="submit" value="Submit">
-          <input name='crear-otro' type="submit" value="Crear otro Item?">
+          <input name='submitted' type="submit" value="Terminar">
+          <input name='crear-otro' type="submit" value="Agregar otro">
           </td>
         </tr>
         </table>

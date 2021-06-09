@@ -133,5 +133,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+# se agrega esto para que pida logear cuando queremos acceder sin usuario
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'

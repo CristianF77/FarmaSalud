@@ -40,9 +40,12 @@ def reducirCantidad(producto, cantidad):
 
 def calcularImporte(num_vta):
     vta = Venta.objects.get(id=num_vta)
+    print('calculcar Importe -> Vta: ', vta)
     items = Item.objects.filter(venta=vta.id)
+    print('calculcar Importe -> Items: ', items)
     total = 0
     for i in items:
+        print('i', i.importe)
         total += i.importe
 
     print(total)
@@ -141,5 +144,3 @@ def controlar_dt(data):
         #     return False
     except Exception as e:
         return False
-    
-    

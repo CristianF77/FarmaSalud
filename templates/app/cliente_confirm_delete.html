@@ -1,0 +1,12 @@
+{% extends 'app/base.html'%}
+
+{% block content%}
+<a href="{% url 'cliente-list'%}">Volver</a>
+<form action="" method="POST">
+    {% csrf_token %}
+    <p> ¿Estás seguro que desas borrar la venta? {{Cliente}}</p>
+    <input type="submit" value="Delete" />
+</form>
+
+
+{% endblock%}

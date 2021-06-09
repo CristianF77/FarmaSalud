@@ -4,29 +4,31 @@ from django import forms
 from .models import Item, Producto, Venta, PersonalSucursal, Cliente, Reportes, Farmacia
 
 
-# class ItemForm(forms.Form, farmacia):
-#     producto = forms.ModelChoiceField(queryset=Producto.objects.all())
-#     cantidad = forms.IntegerField(label='Ingrese cantidad')
-
 class ItemForm(ModelForm):
     class Meta:
         model = Item
         fields = ('producto', 'cantidad')
 
 
-class VentaForm(forms.Form):
-    METODO_PAGO = (('Efectivo', 'Contado'), ('Débito',
-                   'Tarjeta de débito'), ('Crédito', 'Tarjeta de crédito'))
+class VentaForm(ModelForm):
+    class Meta:
+        model = Venta
+        fields = ('metodo_pago', 'cliente')
 
-    vendedor = forms.ModelChoiceField(
-        required=True, queryset=PersonalSucursal.objects.filter(cargo='DT'))
-    cliente = forms.ModelChoiceField(
-        required=True, queryset=Cliente.objects.all())
-    metodo = forms.ChoiceField(choices=METODO_PAGO, label='Método de pago')
+# class VentaForm(forms.Form):
+#     METODO_PAGO = (('Efectivo', 'Contado'), ('Débito',
+#                    'Tarjeta de débito'), ('Crédito', 'Tarjeta de crédito'))
+
+#     vendedor = forms.ModelChoiceField(
+#         required=True, queryset=PersonalSucursal.objects.filter(cargo='DT'))
+#     cliente = forms.ModelChoiceField(
+#         required=True, queryset=Cliente.objects.all())
+#     metodo = forms.ChoiceField(choices=METODO_PAGO, label='Método de pago')
+
 
 class FarmaciaForm(forms.Form):
-    farmacia = forms.ModelChoiceField(required=True, queryset=Farmacia.objects.all())
-
+    farmacia = forms.ModelChoiceField(
+        required=True, queryset=Farmacia.objects.all())
 
 
 class AñadirStock(ModelForm):
@@ -70,3 +72,9 @@ class SalesSearchForm(forms.Form):
     hasta = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     chart_type = forms.ChoiceField(choices=CHART_CHOICES)
     results_by = forms.ChoiceField(choices=RESULT_CHOICES)
+
+
+class BuscarProductoForm(ModelForm):
+    class Meta:
+        model = Producto
+        fields = ['nombre']

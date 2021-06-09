@@ -1,0 +1,17 @@
+{% extends 'app/base.html'%}
+
+{% block content%}
+<br>
+<h3 class= "text-center">Producto Form</h3>
+<hr>
+
+<div>
+    <a class="btn btn-secondary btn" href="{% url 'producto-list'%}">Volver</a>
+    <br>
+    <form action="" method="POST">
+    {% csrf_token %} 
+    {{form.as_p}}
+    <input type="submit" value="Submit" href=""/>
+    </form>
+</div>
+{% endblock%}
