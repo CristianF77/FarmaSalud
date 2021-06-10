@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Producto, PersonalSucursal, Venta, Item, Cliente, Farmacia, User
 from .forms import ItemForm, VentaForm, AñadirStock, ClienteForm, BuscarClienteForm, SalesSearchForm, ReportForm, FarmaciaForm, BuscarProductoForm
-from .utils import calcularImporte, controlarStock, get_cliente_por_id, get_farmacia_por_id, get_vendedor_por_id, get_chart, render_to_pdf, controlar_dt
+from .utils import calcularImporte, controlarStock, get_cliente_por_id, get_farmacia_por_id, get_vendedor_por_id, get_chart, render_to_pdf, controlar_dt, reducirCantidad
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -85,6 +85,7 @@ def item_create(request, pk):
                         i = Item(producto=producto, cantidad=cantidad)
                         i.venta = vta
                         i.save()
+                        reducirCantidad(producto, cantidad)
 
                         if 'crear-otro' in request.POST:
                             print('crear-otro')
@@ -183,7 +184,7 @@ def venta_final(request, pk):
             venta = Venta.objects.get(id=pk)
             items = Item.objects.filter(venta=pk)
 
-    else:        
+    else:
         permiso = False
 
     context = {

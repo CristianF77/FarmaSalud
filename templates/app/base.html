@@ -28,6 +28,7 @@
               <a class="nav-link" href="">Usuario: {{user.username}}  |</a>
             </li>
             {% comment %} {% if permiso %} {% endcomment %}
+          
               {% comment %} <li class="nav-item">
                 <a class="nav-link" href="{% url 'stock'%}">Stock</a>
               </li> {% endcomment %}
@@ -35,19 +36,17 @@
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'cliente-list'%}">Crear Venta</a>
               </li>
-              {% comment %} {% endif %} {% endcomment %}
-              {% comment %} {% if not permiso%}
+
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'stock-total'%}">Stock</a>
+                <a class="nav-link" href="{% url 'producto-list'%}">Stock</a>
               </li>
-              <li class="nav-item">
+              {% comment %} <li class="nav-item">
                 <a class="nav-link" href="{% url 'personal'%}">Personal</a>
-              </li>
-              <li class="nav-item">
+              </li> {% endcomment %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'reportes'%}">Reportes</a>
               </li>
-              {% endif%} {% endcomment %}
+
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'logout'%}">Logout</a>
               </li>
